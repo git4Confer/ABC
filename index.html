@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Holistic Urban 3D Scene Understanding via Gaussian Splatting">
+  <meta name="keywords" content="holistic, urban, understanding, gaussian, reconstruction">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- <title>HUGS: Holistic Urban 3D Scene Understanding via Gaussian Splatting</title> -->
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1FWSVCGZTG"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-1FWSVCGZTG');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./css/bulma.min.css">
+  <link rel="stylesheet" href="./css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./css/twentytwenty.css">
+  <link rel="stylesheet" href="./css/index.css">
+  <link rel="icon" href="./images/favicon.svg">
+
+  <script src="./js/jquery-3.2.1.min.js"></script>
+  <script src="./js/jquery.event.move.js"></script>
+  <script src="./js/jquery.twentytwenty.js"></script>
+  <script src="./js/bulma-carousel.min.js"></script>
+  <script src="./js/bulma-slider.min.js"></script>
+  <script src="./js/fontawesome.all.min.js"></script>
+
+  <!--MathJax-->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Ego***ns</h1>
+          <!-- <h3 class="title has-text-centered">***</h3> -->
+          <!-- <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://github.com/hyzhou404" target="_blank" rel="noopener noreferrer">
+                Hongyu Zhou</a><sup>1</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://jiahao-shao1.github.io/" target="_blank" rel="noopener noreferrer">
+                Jiahao Shao</a><sup>1</sup>,
+            </span>
+            <span class="author-block">
+              <a href="" target="_blank" rel="noopener noreferrer">
+                Lu Xu</a><sup>1</sup>,
+            </span>
+            <span class="author-block">
+              <a href="" target="_blank" rel="noopener noreferrer">
+                Dongfeng Bai</a><sup>2</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://weichaoqiu.com/" target="_blank" rel="noopener noreferrer">
+                Weichao Qiu</a><sup>2</sup>,
+            </span>
+            <span class="author-block">
+              <a href="" target="_blank" rel="noopener noreferrer">
+                Bingbing Liu</a><sup>2</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://ywang-zju.github.io/" target="_blank" rel="noopener noreferrer">
+                Yue Wang</a><sup>1</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://www.cvlibs.net/" target="_blank" rel="noopener noreferrer">
+                Andreas Geiger</a><sup>3,4</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://yiyiliao.github.io/" target="_blank" rel="noopener noreferrer">
+                Yiyi Liao</a><sup>1</sup>,
+            </span>
+          </div> -->
+
+          <!-- <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>Zhejiang University,</span>
+            <span class="author-block"><sup>2</sup>Huawei Noah's Ark Lab,</span>
+            <span class="author-block"><sup>3</sup>University of Tübingen,</span>
+            <span class="author-block"><sup>4</sup>Tübingen AI Center</span>
+          </div> -->
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- <span class="link-block">
+                <a href="https://arxiv.org/abs/2403.12722" target="_blank" rel="noopener noreferrer"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv" style="color: orangered"></i>
+                  </span>
+                  <span>Arxiv</span>
+                </a>
+              </span> -->
+              <!-- <span class="link-block">
+                <a href="https://openaccess.thecvf.com/content/CVPR2024/html/Zhou_HUGS_Holistic_Urban_3D_Scene_Understanding_via_Gaussian_Splatting_CVPR_2024_paper.html" target="_blank" rel="noopener noreferrer"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf" style="color: cornflowerblue"></i>
+                  </span>
+                  <span>Paper</span>
+                </a> -->
+              <!-- </span> -->
+              <!-- Code Link. -->
+              <!-- <span class="link-block">
+                <a href="https://github.com/hyzhou404/HUGS" target="_blank" rel="noopener noreferrer"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                </a>
+              </span> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- <section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+
+
+    </div>
+  </div>
+</section> -->
+
+
+<section class="section pt-0">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <!-- <h2 class="title is-3">Overview</h2>
+        <img id="teaser" width="100%" src="./images/teaser2_compressed.jpg" alt="Teaser image demonstrating Marigold depth estimation."/> -->
+        <!-- <div class="content has-text-justified">
+          <p>
+            We present <span class="methodname">HUGS</span>, a novel pipeline that utilizes 3D Gaussian Splatting for holistic urban scene understanding.
+            Our main idea involves the joint optimization of geometry, appearance, semantics, and motion using a combination of static and dynamic 3D Gaussians,
+            where moving object poses are regularized via physical constraints. Our approach offers the ability to render new viewpoints in real-time, yielding
+            2D and 3D semantic information with high accuracy, and reconstruct dynamic scenes, even in scenarios where 3D bounding box detection are highly noisy.
+          </p>
+        </div> -->
+        <!-- <div class="content has-text-justified">
+          <p>
+            The gallery below presents the holistic urban scene understanding results of <span class="methodname">HUGS</span> on the open autonomous driving dataset.
+            Use the slider and gestures to reveal details on both sides.
+          </p>
+        </div> -->
+      </div>
+    </div>
+    <!--/ Abstract. -->
+
+    <!-- Paper video. -->
+    <!-- <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Video</h2>
+        <div class="publication-video">
+          <iframe width="560" height="315" src="https://www.youtube.com/embed/DmPhL-8FeT4?si=IrJkk4bGNQhuQKVK" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div> -->
+    <!--/ Paper video. -->
+
+  </div>
+</section>
+
+
+<h3 class="title has-text-centered">
+  Comparison with StreetGaussian & Our rendered result
+</h3>
+<section class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container">
+      <div id="results-carousel-vertical" class="carousel results-carousel">
+
+        <div class="fouritem">
+          <div class="twentytwenty-container twentytwenty-container-top11">
+            <div class="cmpcontent">
+              <img src="./images/scene_06/ours.png">
+            </div>
+            <div class="cmpcontent">
+              <img src="./images/scene_06/sg.png">
+            </div>
+          </div>
+          <div class="twentytwenty-container twentytwenty-container-top21">
+            <div class="cmpcontent">
+              <img src="./images/scene_150/ours_000188_rgb.png">
+            </div>
+            <div class="cmpcontent">
+              <img src="./images/scene_150/sg_000188_rgb.png">
+            </div>
+          </div>
+          <div class="twentytwenty-container twentytwenty-container-top31">
+            <div class="cmpcontent">
+              <img src="./images/scene_108/ours_000120_rgb.png">
+            </div>
+            <div class="cmpcontent">
+              <img src="./images/scene_108/sg_000120_rgb.png">
+            </div>
+          </div>
+          <div class="twentytwenty-container twentytwenty-container-top41">
+            <div class="cmpcontent">
+              <img src="./images/baseline/vkitti06/ours.png">
+            </div>
+            <div class="cmpcontent">
+              <img src="./images/baseline/vkitti06/nsg.png">
+            </div>
+          </div>
+        </div>
+
+
+
+		<!-- iertnpioejgg##################################### -->
+        <div class="fouritem">
+			<div class="twentytwenty-container twentytwenty-container-top21">
+              <div class="cmpcontent">
+                <img src="./images/scene_90/ours_000086_rgb.png">
+              </div>
+              <div class="cmpcontent">
+                <img src="./images/scene_90/sg_000086_rgb.png">
+              </div>
+            </div>
+			<div class="twentytwenty-container twentytwenty-container-top31">
+			  <div class="cmpcontent">
+				<img src="./images/scene_150/ours_000144_rgb.png">
+			  </div>
+			  <div class="cmpcontent">
+				<img src="./images/scene_150/sg_000144_rgb.png">
+			  </div>
+			</div>
+          <div class="twentytwenty-container twentytwenty-container-top32">
+            <div class="cmpcontent">
+              <img src="./images/scene_026/ours_000006_rgb.png">
+            </div>
+            <div class="cmpcontent">
+              <img src="./images/scene_026/sg_000006_rgb.png">
+            </div>
+          </div>
+          <!-- <div class="twentytwenty-container twentytwenty-container-top42">
+            <div class="cmpcontent">
+              <img src="./images/baseline/vkitti06/ours.png">
+            </div>
+            <div class="cmpcontent">
+              <img src="./images/baseline/vkitti06/mars.png">
+            </div>
+          </div>
+        </div> -->
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  $(window).on('load', function() {
+    bulmaCarousel.attach('#results-carousel-horizontal', {
+      slidesToScroll: 1,
+      slidesToShow: 1,
+      loop: true,
+      autoplay: false,
+    });
+
+    bulmaCarousel.attach('#results-carousel-vertical', {
+      slidesToScroll: 2,
+      slidesToShow: 2,
+      loop: true,
+      autoplay: false,
+    });
+
+    bulmaCarousel.attach('#results-carousel-vertical2', {
+      slidesToScroll: 1,
+      slidesToShow: 3,
+      loop: true,
+      autoplay: false,
+    });
+
+    $(".twentytwenty-container-top11").twentytwenty({
+      before_label: 'Ours',
+      after_label: 'StreetGaussians',
+      default_offset_pct: 0.75,
+    });
+    $(".twentytwenty-container-top21").twentytwenty({
+      before_label: 'Ours',
+      after_label: 'StreetGaussians',
+      default_offset_pct: 0.75,
+    });
+    $(".twentytwenty-container-top12").twentytwenty({
+      before_label: 'Ours',
+      after_label: 'StreetGaussians',
+      default_offset_pct: 0.75,
+    });
+    $(".twentytwenty-container-top22").twentytwenty({
+      before_label: 'Ours',
+      after_label: 'StreetGaussians',
+      default_offset_pct: 0.75,
+    });
+    $(".twentytwenty-container-top31").twentytwenty({
+      before_label: 'Ours',
+      after_label: 'StreetGaussians',
+      default_offset_pct: 0.75,
+    });
+    $(".twentytwenty-container-top32").twentytwenty({
+      before_label: 'Ours',
+      after_label: 'StreetGaussians',
+      default_offset_pct: 0.75,
+    });
+    $(".twentytwenty-container-top41").twentytwenty({
+      before_label: 'Ours',
+      after_label: 'StreetGaussians',
+      default_offset_pct: 0.75,
+    });
+    $(".twentytwenty-container-top42").twentytwenty({
+      before_label: 'Ours',
+      after_label: 'StreetGaussians',
+      default_offset_pct: 0.75,
+    });
+  });
+</script>
+
+
+
+<br>
+<h3 class="title has-text-centered">
+ Rendered Video : Waymo Data Set
+</h3>
+<br>
+<h3 class="title has-text-centered" style="font-weight: normal;">
+ Ours
+</h3>
+
+<br>
+<section class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container">
+      <div id="results-carousel-vertical2" class="carousel results-carousel">
+          <div class="cmpcontent">
+            <video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+              <source src="./video/scene_105/color.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+
+          <div class="cmpcontent">
+            <video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+              <source src="./video/scene_105/color_bkgd.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+
+          <div class="cmpcontent">
+            <video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+              <source src="./video/scene_105/color_obj.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+
+          <div class="cmpcontent">
+            <video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+              <source src="./video/scene_105/depth.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+
+		  <div class="cmpcontent">
+			<video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+			  <source src="./video/scene_181/color.mp4"
+					  type="video/mp4">
+			</video>
+		  </div>
+
+		  <div class="cmpcontent">
+			<video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+			  <source src="./video/scene_181/color_bkgd.mp4"
+					  type="video/mp4">
+			</video>
+		  </div>
+
+		  <div class="cmpcontent">
+			<video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+			  <source src="./video/scene_181/color_obj.mp4"
+					  type="video/mp4">
+			</video>
+		  </div>
+
+		  <div class="cmpcontent">
+			<video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+			  <source src="./video/scene_181/depth.mp4"
+					  type="video/mp4">
+			</video>
+		  </div>
+
+
+
+		  		  <div class="cmpcontent">
+		  			<video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+		  			  <source src="./video/scene_108/color.mp4"
+		  					  type="video/mp4">
+		  			</video>
+		  		  </div>
+
+		  		  <div class="cmpcontent">
+		  			<video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+		  			  <source src="./video/scene_108/color_bkgd.mp4"
+		  					  type="video/mp4">
+		  			</video>
+		  		  </div>
+
+		  		  <div class="cmpcontent">
+		  			<video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+		  			  <source src="./video/scene_108/color_obj.mp4"
+		  					  type="video/mp4">
+		  			</video>
+		  		  </div>
+
+		  		  <div class="cmpcontent">
+		  			<video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+		  			  <source src="./video/scene_108/depth.mp4"
+		  					  type="video/mp4">
+		  			</video>
+		  		  </div>
+
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+<h3 class="title has-text-centered" style="font-weight: normal;">
+ StreetGaussians
+</h3>
+
+<br>
+<section class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container">
+      <div id="results-carousel-vertical2" class="carousel results-carousel">
+          <div class="cmpcontent">
+            <video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+              <source src="./video/sg/scene_105/color.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+
+          <div class="cmpcontent">
+            <video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+              <source src="./video/sg/scene_105/color_bkgd.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+
+          <div class="cmpcontent">
+            <video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+              <source src="./video/sg/scene_105/color_obj.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+
+          <div class="cmpcontent">
+            <video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+              <source src="./video/sg/scene_105/depth.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+
+		  <div class="cmpcontent">
+			<video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+			  <source src="./video/sg/scene_181/color.mp4"
+					  type="video/mp4">
+			</video>
+		  </div>
+
+		  <div class="cmpcontent">
+			<video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+			  <source src="./video/sg/scene_181/color_bkgd.mp4"
+					  type="video/mp4">
+			</video>
+		  </div>
+
+		  <div class="cmpcontent">
+			<video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+			  <source src="./video/sg/scene_181/color_obj.mp4"
+					  type="video/mp4">
+			</video>
+		  </div>
+
+		  <div class="cmpcontent">
+			<video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+			  <source src="./video/sg/scene_181/depth.mp4"
+					  type="video/mp4">
+			</video>
+		  </div>
+
+
+
+		  		  <div class="cmpcontent">
+		  			<video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+		  			  <source src="./video/sg/scene_108/color.mp4"
+		  					  type="video/mp4">
+		  			</video>
+		  		  </div>
+
+		  		  <div class="cmpcontent">
+		  			<video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+		  			  <source src="./video/sg/scene_108/color_bkgd.mp4"
+		  					  type="video/mp4">
+		  			</video>
+		  		  </div>
+
+		  		  <div class="cmpcontent">
+		  			<video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+		  			  <source src="./video/sg/scene_108/color_obj.mp4"
+		  					  type="video/mp4">
+		  			</video>
+		  		  </div>
+
+		  		  <div class="cmpcontent">
+		  			<video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+		  			  <source src="./video/sg/scene_108/depth.mp4"
+		  					  type="video/mp4">
+		  			</video>
+		  		  </div>
+
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--  -->
+
+<br>
+<h3 class="title has-text-centered">
+ Rendered Video : KITTI 
+</h3>
+<br>
+<h3 class="title has-text-centered" style="font-weight: normal;">
+ Ours
+</h3>
+
+<br>
+<section class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container">
+      <div id="results-carousel-vertical2" class="carousel results-carousel">
+
+
+          <div class="cmpcontent">
+            <video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+              <source src="./video/kitti/ours/scene01/color_0.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+
+          <div class="cmpcontent">
+            <video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+              <source src="./video/kitti/ours/scene01/color_bkgd_0.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+
+          <div class="cmpcontent">
+            <video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+              <source src="./video/kitti/ours/scene01/color_obj_0.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+
+		  <div class="cmpcontent">
+			<video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+			  <source src="./video/kitti/ours/scene01/depth_0.mp4"
+					  type="video/mp4">
+			</video>
+		  </div>
+
+
+		  <div class="cmpcontent">
+			<video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+			  <source src="./video/kitti/ours/Scene02/color_0.mp4"
+					  type="video/mp4">
+			</video>
+		  </div>
+
+		  <div class="cmpcontent">
+			<video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+			  <source src="./video/kitti/ours/Scene02/color_bkgd_0.mp4"
+					  type="video/mp4">
+			</video>
+		  </div>
+
+
+
+		  		  <div class="cmpcontent">
+		  			<video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+		  			  <source src="./video/kitti/ours/Scene02/color_obj_0.mp4"
+		  					  type="video/mp4">
+		  			</video>
+		  		  </div>
+
+		  		  <div class="cmpcontent">
+		  			<video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+		  			  <source src="./video/kitti/ours/Scene02/color_obj_0.mp4"
+		  					  type="video/mp4">
+		  			</video>
+		  		  </div>
+
+		  		  <div class="cmpcontent">
+		  			<video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+		  			  <source src="./video/kitti/ours/Scene02/depth_0.mp4"
+		  					  type="video/mp4">
+		  			</video>
+		  		  </div>
+
+		  		  
+
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+<h3 class="title has-text-centered" style="font-weight: normal;">
+ StreetGaussians
+</h3>
+
+<br>
+<section class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container">
+      <div id="results-carousel-vertical2" class="carousel results-carousel">
+          <div class="cmpcontent">
+            <video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+              <source src="./video/kitti/sg/scene1/color_0.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+
+          <div class="cmpcontent">
+            <video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+              <source src="./video/kitti/sg/scene1/color_bkgd_0.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+
+          <div class="cmpcontent">
+            <video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+              <source src="./video/kitti/sg/scene1/color_obj_0.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+
+          <div class="cmpcontent">
+            <video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+              <source src="./video/kitti/sg/scene1/depth_0.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+
+		  <div class="cmpcontent">
+			<video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+			  <source src="./video/kitti/sg/scene2/color_0.mp4"
+					  type="video/mp4">
+			</video>
+		  </div>
+
+		  <div class="cmpcontent">
+			<video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+			  <source src="./video/kitti/sg/scene2/color_bkgd_0.mp4"
+					  type="video/mp4">
+			</video>
+		  </div>
+
+		  <div class="cmpcontent">
+			<video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+			  <source src="./video/kitti/sg/scene2/color_obj_0.mp4"
+					  type="video/mp4">
+			</video>
+		  </div>
+
+		  <div class="cmpcontent">
+			<video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+			  <source src="./video/kitti/sg/scene2/depth_0.mp4"
+					  type="video/mp4">
+			</video>
+		  </div>
+
+
+
+
+    </div>
+  </div>
+</div>
+</section>
+
+
+<!--  -->
+
+
+
+
+
+      <br>
+      <h3 class="title has-text-centered">
+       Rendered Video : VKITTI 
+      </h3>
+      <br>
+      <h3 class="title has-text-centered" style="font-weight: normal;">
+       Ours
+      </h3>
+      
+      <br>
+      <section class="hero is-light is-small">
+        <div class="hero-body">
+          <div class="container">
+            <div id="results-carousel-vertical2" class="carousel results-carousel">
+      
+      
+                <div class="cmpcontent">
+                  <video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+                    <source src="./video/vkitti/ours/scene1/color_0.mp4"
+                            type="video/mp4">
+                  </video>
+                </div>
+      
+                <div class="cmpcontent">
+                  <video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+                    <source src="./video/vkitti/ours/scene1/color_bkgd_0.mp4"
+                            type="video/mp4">
+                  </video>
+                </div>
+      
+                <div class="cmpcontent">
+                  <video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+                    <source src="./video/vkitti/ours/scene1/color_obj_0.mp4"
+                            type="video/mp4">
+                  </video>
+                </div>
+      
+            <div class="cmpcontent">
+            <video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+              <source src="./video/vkitti/ours/scene1/depth_0.mp4"
+                  type="video/mp4">
+            </video>
+            </div>
+      
+      
+            <div class="cmpcontent">
+            <video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+              <source src="./video/vkitti/ours/scene2/color_0.mp4"
+                  type="video/mp4">
+            </video>
+            </div>
+      
+            <div class="cmpcontent">
+            <video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+              <source src="./video/vkitti/ours/scene2/color_bkgd_0.mp4"
+                  type="video/mp4">
+            </video>
+            </div>
+      
+      
+      
+                  <div class="cmpcontent">
+                  <video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+                    <source src="./video/vkitti/ours/scene2/color_obj_0.mp4"
+                        type="video/mp4">
+                  </video>
+                  </div>
+      
+                  <div class="cmpcontent">
+                  <video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+                    <source src="./video/vkitti/ours/scene2/color_obj_0.mp4"
+                        type="video/mp4">
+                  </video>
+                  </div>
+      
+                  <div class="cmpcontent">
+                  <video poster="" id="steve"autoplay controls muted loop playsinline width="100%">
+                    <source src="./video/vkitti/ours/scene2/depth_0.mp4"
+                        type="video/mp4">
+                  </video>
+                  </div>
+      
+                  
+      
+      
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      
+      
+      
+      <h3 class="title has-text-centered" style="font-weight: normal;">
+       StreetGaussians
+      </h3>
+      
+      <br>
+      <section class="hero is-light is-small">
+        <div class="hero-body">
+          <div class="container">
+            <div id="results-carousel-vertical2" class="carousel results-carousel">
+                <div class="cmpcontent">
+                  <video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+                    <source src="./video/vkitti/sg/scene1/color_0.mp4"
+                            type="video/mp4">
+                  </video>
+                </div>
+      
+                <div class="cmpcontent">
+                  <video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+                    <source src="./video/vkitti/sg/scene1/color_bkgd_0.mp4"
+                            type="video/mp4">
+                  </video>
+                </div>
+      
+                <div class="cmpcontent">
+                  <video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+                    <source src="./video/vkitti/sg/scene1/color_obj_0.mp4"
+                            type="video/mp4">
+                  </video>
+                </div>
+      
+                <div class="cmpcontent">
+                  <video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+                    <source src="./video/vkitti/sg/scene1/depth_0.mp4"
+                            type="video/mp4">
+                  </video>
+                </div>
+      
+            <div class="cmpcontent">
+            <video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+              <source src="./video/vkitti/sg/scene2/color_0.mp4"
+                  type="video/mp4">
+            </video>
+            </div>
+      
+            <div class="cmpcontent">
+            <video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+              <source src="./video/vkitti/sg/scene2/color_bkgd_0.mp4"
+                  type="video/mp4">
+            </video>
+            </div>
+      
+            <div class="cmpcontent">
+            <video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+              <source src="./video/vkitti/sg/scene2/color_obj_0.mp4"
+                  type="video/mp4">
+            </video>
+            </div>
+      
+            <div class="cmpcontent">
+            <video poster="" id="steve"autoplay  controls muted loop playsinline width="100%">
+              <source src="./video/vkitti/sg/scene2/depth_0.mp4"
+                  type="video/mp4">
+            </video>
+            </div>
+      
+      
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		  		  
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<footer class="footer pt-4 pb-0">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+            <p>
+            Website template based on
+            <a href="https://github.com/nerfies/nerfies.github.io">
+              Nerfies
+            </a>
+            and licensed under
+            <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+              CC-BY-SA-4.0
+            </a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
